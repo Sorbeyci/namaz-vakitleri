@@ -1,0 +1,73 @@
+# Namaz Vakitleri
+
+Mobil öncelikli namaz vakitleri ve günlük namaz takip uygulaması.
+React + Vite + TypeScript + Firebase (Auth/Firestore) + Vercel serverless API + PWA.
+
+## Özellikler
+
+- Sıradaki namaz kartı (gerçek zamanlı sayaç, yatsıdan sonra ertesi günün sabahına geçer)
+- Günlük vakit listesi ve tek dokunuşla "Kılındı" işaretleme / geri alma
+- Kaçırılan namazları "Kaza edildi" olarak işaretleme (bugün ve takvimden)
+- Takvim üzerinde geçmiş takibi (gün durum göstergeleri)
+- Yargılamayan, teşvik eden istatistikler
+- Misafir kullanım (cihazda saklama) + Google girişi ile Firestore senkronizasyonu
+  ve veri kaybetmeyen birleştirme
+- Açık/koyu tema, merkezi design token sistemi, uygulamaya özel SVG ikon seti
+- PWA: ana ekrana ekleme (Android butonu / iOS yönergesi), offline destek
+
+## Kurulum
+
+```bash
+npm install
+npm run dev
+```
+
+`DIYANET_API_KEY` tanımlı değilse geliştirme sunucusu örnek verilerle çalışır
+(arayüzde "Örnek veriler" uyarısı görünür). Gerçek veriler için proje kökünde
+`.env` dosyası oluşturup anahtarı ekleyin (bkz. `.env.example`) — Vite dev
+sunucusu API route'unu yerelde taklit eder.
+
+## Firebase yapılandırması (tek seferlik)
+
+Firebase Console → `cash-flow-tracker-8e627` projesinde:
+
+1. **Authentication → Sign-in method → Google** sağlayıcısını etkinleştirin.
+2. **Authentication → Settings → Authorized domains** listesine Vercel alan
+   adınızı ekleyin (örn. `namaz.vercel.app`). `localhost` varsayılan olarak eklidir.
+3. **Firestore Database** oluşturun (production mode) ve **Rules** sekmesine
+   [firestore.rules](firestore.rules) içeriğini yapıştırıp yayınlayın.
+
+## Vercel dağıtımı
+
+```bash
+vercel deploy
+```
+
+Environment Variables (Project Settings → Environment Variables):
+
+| Değişken | Zorunlu | Açıklama |
+|---|---|---|
+| `DIYANET_API_KEY` | Evet | Diyanet vakitler API anahtarı. **Paylaşılmış eski anahtarı kullanmayın; yeni anahtar alın.** Yalnızca sunucuda kullanılır, tarayıcıya asla inmez. |
+| `FIREBASE_SERVICE_ACCOUNT` | Hayır (önerilir) | Service account JSON'u (tek satır). Verilirse 30 günlük vakit cache'i Firestore `prayerTimesCache` koleksiyonunda kalıcı saklanır; verilmezse bellek içi cache kullanılır. Firebase Console → Project Settings → Service accounts → Generate new private key. |
+
+## Mimari notları
+
+- **API proxy:** İstemci Diyanet API'sine doğrudan istek atmaz;
+  [api/prayer-times.ts](api/prayer-times.ts) → [server/prayerTimes.ts](server/prayerTimes.ts)
+  anahtar ile sunucuda sorgular. Şehir parametresi 81 il listesine karşı doğrulanır.
+- **Cache katmanları:** şehir başına 30 günlük veri tek istekte çekilir →
+  bellek içi + (opsiyonel) Firestore cache → CDN `s-maxage` → istemci
+  `localStorage` + service worker. API düşerse son geçerli veri gösterilir.
+- **Veri modeli:** `users/{uid}/days/{YYYY-MM-DD}` — gün başına tek doküman,
+  aynı gün+vakit için birden fazla kayıt yapısal olarak imkânsız.
+  "Kaçırıldı"/"vakti gelmedi" durumları yazılmaz, saatten türetilir.
+- **Saat dilimi:** tüm hesaplar `Europe/Istanbul`'a sabitlidir.
+
+## Komutlar
+
+| Komut | Açıklama |
+|---|---|
+| `npm run dev` | Geliştirme sunucusu (API route taklidi dahil) |
+| `npm run build` | Tip kontrolü + üretim derlemesi |
+| `npm run preview` | Üretim derlemesini yerelde sunar |
+| `npm run icons` | `public/icons/icon.svg` kaynağından PNG ikonları üretir |
