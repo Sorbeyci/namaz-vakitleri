@@ -1,0 +1,75 @@
+/* Merkezi tasarım token'ları — renkler component'lere yazılmaz, buradan gelir. */
+
+:root {
+  /* renk: açık tema */
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --surface-2: #efece4;
+  --text: #21302c;
+  --text-muted: #6d7c76;
+  --text-faint: #9aa7a1;
+  --primary: #11675c;
+  --primary-soft: #e0efe9;
+  --on-primary: #ffffff;
+  --accent: #b97f2a;
+  --accent-soft: #f6ead6;
+  --success: #2e7d5b;
+  --success-soft: #dff0e6;
+  --danger: #b3503e;
+  --danger-soft: #f7e3de;
+  --border: #e3e0d6;
+  --shadow: 0 1px 3px rgba(33, 48, 44, 0.07), 0 6px 20px rgba(33, 48, 44, 0.06);
+  --overlay: rgba(23, 32, 29, 0.45);
+
+  /* tipografi */
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.75rem;
+  --fs-xxl: 2.5rem;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* boşluk ve köşe */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-full: 999px;
+
+  --nav-height: 64px;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #101917;
+  --surface: #18231f;
+  --surface-2: #1f2c28;
+  --text: #e7edea;
+  --text-muted: #97a5a0;
+  --text-faint: #6b7975;
+  --primary: #3fa08f;
+  --primary-soft: #1b332e;
+  --on-primary: #0b1512;
+  --accent: #d29a45;
+  --accent-soft: #33291a;
+  --success: #55b389;
+  --success-soft: #1c2f26;
+  --danger: #d3705c;
+  --danger-soft: #33211d;
+  --border: #263531;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.3);
+  --overlay: rgba(0, 0, 0, 0.55);
+
+  color-scheme: dark;
+}
