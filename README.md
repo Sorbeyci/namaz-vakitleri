@@ -1,6 +1,6 @@
-# Namaz Vakitleri
+# Namaz 365
 
-Mobil öncelikli namaz vakitleri ve günlük namaz takip uygulaması.
+Mobil öncelikli namaz vakitleri ve günlük namaz takip uygulaması — [namaz365.com](https://namaz365.com).
 React + Vite + TypeScript + Firebase (Auth/Firestore) + Vercel serverless API + PWA.
 
 ## Özellikler

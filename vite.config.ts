@@ -45,8 +45,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["icons/icon.svg", "icons/apple-touch-icon.png"],
       manifest: {
-        name: "Namaz Vakitleri",
-        short_name: "Namaz",
+        name: "Namaz 365",
+        short_name: "Namaz 365",
         description: "Namaz vakitleri ve günlük namaz takibi",
         lang: "tr",
         start_url: "/",

@@ -17,5 +17,5 @@ jobs:
     steps:
       - name: Hatirlatma ucunu cagir
         run: |
-          curl -fsS -X POST "https://namaz-vakitleri-five.vercel.app/api/send-reminders" \
+          curl -fsS -X POST "https://namaz365.com/api/send-reminders" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

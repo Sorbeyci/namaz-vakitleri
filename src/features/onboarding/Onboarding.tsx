@@ -87,7 +87,7 @@ function OnboardingOverlay({ onClose }: { onClose: () => void }) {
         {/* 1 — Hoş geldin */}
         <section className="onboard-slide">
           <Motif />
-          <h2>Namaz Vakitleri'ne hoş geldin</h2>
+          <h2>Namaz 365'e hoş geldin</h2>
           <p>
             Vakitleri gör, namazlarını işaretle, düzenini koru. Nasıl çalıştığını
             görmek için kaydır.

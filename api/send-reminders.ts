@@ -11,7 +11,7 @@ import { handlePrayerTimes } from "../server/prayerTimes.js";
 import { addDays, istanbulEpoch, todayIstanbul } from "../server/time.js";
 import { PRAYERS } from "../src/lib/prayers.js";
 
-const SITE_URL = "https://namaz-vakitleri-five.vercel.app/";
+const SITE_URL = "https://namaz365.com/";
 
 interface DayTimesLike {
   date: string;

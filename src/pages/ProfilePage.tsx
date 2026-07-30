@@ -287,7 +287,7 @@ export function ProfilePage() {
       </div>
 
       <button className="caption version-btn" onClick={() => setChangelogOpen(true)}>
-        Namaz Vakitleri · v{APP_VERSION}
+        Namaz 365 · v{APP_VERSION}
       </button>
 
       {changelogOpen && (

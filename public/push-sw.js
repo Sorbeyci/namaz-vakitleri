@@ -7,10 +7,10 @@ self.addEventListener("push", (event) => {
   try {
     payload = event.data.json();
   } catch {
-    payload = { notification: { title: "Namaz Vakitleri", body: event.data.text() } };
+    payload = { notification: { title: "Namaz 365", body: event.data.text() } };
   }
   const n = payload.notification || payload.data || {};
-  const title = n.title || "Namaz Vakitleri";
+  const title = n.title || "Namaz 365";
   event.waitUntil(
     self.registration.showNotification(title, {
       body: n.body || "",
