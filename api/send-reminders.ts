@@ -60,9 +60,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         },
       });
       testSent += resp.successCount;
+      const invalid: string[] = [];
       resp.responses.forEach((r, i) => {
-        if (r.error) console.error(`[reminders] test hata (${tokens[i].slice(0, 12)}…):`, r.error.code, r.error.message);
+        if (!r.error) return;
+        console.error(`[reminders] test hata (${tokens[i].slice(0, 12)}…):`, r.error.code, r.error.message);
+        if (
+          r.error.code.includes("registration-token-not-registered") ||
+          r.error.code.includes("invalid-argument")
+        ) {
+          invalid.push(tokens[i]);
+        }
       });
+      if (invalid.length) {
+        await d.ref.update({ fcmTokens: FieldValue.arrayRemove(...invalid) }).catch(() => {});
+      }
     }
     res.status(200).json({ test: true, tokens: tokenCount, sent: testSent });
     return;
