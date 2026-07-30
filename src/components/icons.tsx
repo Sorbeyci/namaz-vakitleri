@@ -180,6 +180,16 @@ export function IconQada(p: IconProps) {
   );
 }
 
+/* Konum — harita iğnesi */
+export function IconLocation(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <path d="M19 10.5c0 5-7 10-7 10s-7-5-7-10a7 7 0 0 1 14 0Z" />
+      <circle cx="12" cy="10.5" r="2.5" />
+    </Svg>
+  );
+}
+
 export function IconSearch(p: IconProps) {
   return (
     <Svg {...p}>

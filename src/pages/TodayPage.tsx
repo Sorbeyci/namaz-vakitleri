@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  IconCalendar,
   IconCheck,
   IconChevronRight,
   IconGoogle,
@@ -14,14 +16,25 @@ import { useAuth } from "../features/auth/AuthContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLogs } from "../features/tracking/LogsContext";
 import { InstallPrompt } from "../features/pwa/InstallPrompt";
-import { formatDuration } from "../lib/dates";
+import { formatDurationSeconds, istanbulEpoch } from "../lib/dates";
 import { PRAYERS, STATUS_LABELS, type DerivedStatus } from "../lib/prayers";
 import { deriveStatus, findNextPrayer } from "../lib/status";
 
 function NextPrayerCard() {
   const { days, now } = useTimes();
+  // Saniyeli geri sayım: dakikalık context saatinden bağımsız, saniyede bir işler
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNowMs(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
   const next = findNextPrayer(days, now.dateKey, now.minutes);
   if (!next) return null;
+  const secondsLeft = Math.max(
+    0,
+    Math.floor((istanbulEpoch(next.dateKey, next.time) - nowMs) / 1000),
+  );
   return (
     <div className="next-card">
       <div className="next-card-icon">
@@ -32,7 +45,10 @@ function NextPrayerCard() {
         <div className="next-card-name">{next.def.name}</div>
         <div className="next-card-time">{next.time}</div>
         <div className="next-card-remaining">
-          {next.def.name} namazına {formatDuration(next.minutesLeft)} kaldı
+          <span className="pulse-dot" />
+          {secondsLeft === 0
+            ? `${next.def.name} vakti girdi`
+            : `${next.def.name} namazına ${formatDurationSeconds(secondsLeft)} kaldı`}
           {!next.isToday && " (yarın)"}
         </div>
       </div>
@@ -204,6 +220,11 @@ export function TodayPage() {
           )}
           <NextPrayerCard />
           <PrayerList />
+          <Link to="/vakitler" className="card list-link">
+            <IconCalendar size={20} />
+            <span style={{ flex: 1 }}>30 günlük vakit listesi</span>
+            <IconChevronRight size={16} />
+          </Link>
           {!user && (
             <div className="card" style={{ display: "flex", gap: "var(--sp-3)", alignItems: "center" }}>
               <div style={{ flex: 1, fontSize: "var(--fs-sm)", color: "var(--text-muted)" }}>

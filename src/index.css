@@ -229,6 +229,53 @@ a {
   font-size: var(--fs-sm);
   opacity: 0.85;
   margin-top: var(--sp-1);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+/* Sayacın yanında sakin, nefes alan bir nokta */
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--r-full);
+  background: currentColor;
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+}
+
+.next-card-icon svg {
+  animation: breathe 5s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot,
+  .next-card-icon svg {
+    animation: none;
+  }
 }
 
 /* ---------- vakit listesi ---------- */
@@ -588,6 +635,55 @@ a {
 .city-item.selected {
   color: var(--primary);
   font-weight: var(--fw-semibold);
+}
+
+/* ---------- 30 günlük vakit listesi ---------- */
+
+.list-link {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-weight: var(--fw-semibold);
+}
+
+.list-link svg {
+  color: var(--primary);
+}
+
+.times-row {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(6, 1fr);
+  align-items: center;
+  gap: 2px;
+  padding: var(--sp-2) var(--sp-1);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.times-row.times-head {
+  color: var(--text-faint);
+  font-weight: var(--fw-semibold);
+}
+
+.times-row.today {
+  background: var(--primary-soft);
+  font-weight: var(--fw-semibold);
+}
+
+.times-date {
+  text-align: left;
+  font-weight: var(--fw-semibold);
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.times-date em {
+  font-style: normal;
+  color: var(--text-faint);
+  font-weight: var(--fw-medium);
 }
 
 /* ---------- takvim ---------- */

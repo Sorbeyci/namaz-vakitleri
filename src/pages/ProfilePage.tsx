@@ -4,6 +4,7 @@ import {
   IconChevronRight,
   IconCity,
   IconGoogle,
+  IconLocation,
   IconLogout,
   IconProfile,
   IconTheme,
@@ -12,6 +13,7 @@ import {
 import { Sheet, useToast } from "../components/ui";
 import { useAuth } from "../features/auth/AuthContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
+import { useLocateCity } from "../features/city/useLocateCity";
 import { useTheme, type ThemePref } from "../theme/ThemeContext";
 
 const THEME_OPTIONS: { value: ThemePref; label: string }[] = [
@@ -23,6 +25,7 @@ const THEME_OPTIONS: { value: ThemePref; label: string }[] = [
 export function ProfilePage() {
   const { user, signIn, signOutUser, deleteAccountAndData } = useAuth();
   const { cityLabel, openPicker } = useTimes();
+  const { locate, locating } = useLocateCity();
   const { pref, setPref } = useTheme();
   const toast = useToast();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -73,6 +76,12 @@ export function ProfilePage() {
           <span className="grow">Şehir</span>
           <span className="value">{cityLabel}</span>
           <IconChevronRight size={16} />
+        </button>
+
+        <button className="settings-row" onClick={locate} disabled={locating}>
+          <IconLocation size={20} />
+          <span className="grow">Konumdan şehir bul</span>
+          {locating && <span className="value">Aranıyor…</span>}
         </button>
 
         <div className="settings-row">

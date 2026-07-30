@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { CITIES, cityName, slugifyCity } from "../../lib/cities";
-import { IconCheck, IconCity, IconSearch } from "../../components/icons";
+import { IconCheck, IconCity, IconLocation, IconSearch } from "../../components/icons";
 import { Sheet } from "../../components/ui";
 import { useTimes } from "../prayer-times/TimesContext";
+import { useLocateCity } from "./useLocateCity";
 
 /**
  * Şehir seçim ekranı. `fullscreen` modunda (ilk kurulum) kapatılamaz,
@@ -10,6 +11,7 @@ import { useTimes } from "../prayer-times/TimesContext";
  */
 export function CityPicker({ fullscreen = false }: { fullscreen?: boolean }) {
   const { citySlug, recentCities, selectCity, closePicker } = useTimes();
+  const { locate, locating } = useLocateCity();
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -31,6 +33,17 @@ export function CityPicker({ fullscreen = false }: { fullscreen?: boolean }) {
           aria-label="Şehir ara"
         />
       </div>
+      {!query && (
+        <button
+          className="btn btn-subtle btn-block btn-sm"
+          style={{ marginBottom: "var(--sp-3)" }}
+          onClick={locate}
+          disabled={locating}
+        >
+          <IconLocation size={18} />
+          {locating ? "Konum alınıyor…" : "Konumumu kullan"}
+        </button>
+      )}
       {recentCities.length > 0 && !query && (
         <div className="chip-row">
           {recentCities.map((slug) => (

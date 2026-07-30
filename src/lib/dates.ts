@@ -14,6 +14,11 @@ export const TR_WEEKDAYS = [
 
 export const TR_WEEKDAYS_SHORT = ["Pt", "Sa", "Ça", "Pe", "Cu", "Ct", "Pz"];
 
+export const TR_MONTHS_SHORT = [
+  "Oca", "Şub", "Mar", "Nis", "May", "Haz",
+  "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara",
+];
+
 export interface IstanbulNow {
   dateKey: string; // YYYY-MM-DD
   minutes: number; // gün içindeki dakika (0-1439)
@@ -88,4 +93,26 @@ export function formatDuration(totalMinutes: number): string {
   if (h === 0) return `${m} dakika`;
   if (m === 0) return `${h} saat`;
   return `${h} saat ${m} dakika`;
+}
+
+/** 6305 → "1 saat 45 dakika 5 saniye" */
+export function formatDurationSeconds(totalSeconds: number): string {
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  const parts: string[] = [];
+  if (h > 0) parts.push(`${h} saat`);
+  if (h > 0 || m > 0) parts.push(`${m} dakika`);
+  parts.push(`${s} saniye`);
+  return parts.join(" ");
+}
+
+/**
+ * Türkiye saatiyle (kalıcı UTC+3, yaz saati uygulaması yok) verilen tarih ve
+ * saatin epoch (ms) karşılığı — saniyeli geri sayım için.
+ */
+export function istanbulEpoch(dateKey: string, time: string): number {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const [hh, mm] = time.split(":").map(Number);
+  return Date.UTC(y, m - 1, d, hh - 3, mm);
 }
