@@ -11,7 +11,7 @@
 // geçerli veri (stale) döndürülür.
 
 import type { Firestore } from "firebase-admin/firestore";
-import { CITY_BY_SLUG, slugifyCity } from "../src/lib/cities";
+import { CITY_BY_SLUG, slugifyCity } from "../src/lib/cities.js";
 
 type TimeKey = "imsak" | "gunes" | "ogle" | "ikindi" | "aksam" | "yatsi";
 

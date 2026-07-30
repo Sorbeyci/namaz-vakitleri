@@ -1,5 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { handlePrayerTimes } from "../server/prayerTimes";
+// Not: ESM ("type": "module") altında Vercel fonksiyon dosyalarını tek tek
+// derler; göreli import'larda açık .js uzantısı zorunludur.
+import { handlePrayerTimes } from "../server/prayerTimes.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
