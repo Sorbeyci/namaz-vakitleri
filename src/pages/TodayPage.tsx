@@ -20,7 +20,7 @@ import { useLogs } from "../features/tracking/LogsContext";
 import { InstallPrompt } from "../features/pwa/InstallPrompt";
 import { formatDurationSeconds, istanbulEpoch } from "../lib/dates";
 import { PRAYERS, STATUS_LABELS, type DerivedStatus } from "../lib/prayers";
-import { deriveStatus, findNextPrayer } from "../lib/status";
+import { activeTimeKey, deriveStatus, findNextPrayer, findPrevPrayerEpoch } from "../lib/status";
 
 function NextPrayerCard() {
   const { days, now } = useTimes();
@@ -33,12 +33,24 @@ function NextPrayerCard() {
 
   const next = findNextPrayer(days, now.dateKey, now.minutes);
   if (!next) return null;
-  const secondsLeft = Math.max(
-    0,
-    Math.floor((istanbulEpoch(next.dateKey, next.time) - nowMs) / 1000),
-  );
+  const targetMs = istanbulEpoch(next.dateKey, next.time);
+  const secondsLeft = Math.max(0, Math.floor((targetMs - nowMs) / 1000));
+
+  // Doluluk göstergesi: önceki namazdan sıradakine geçen sürenin oranı.
+  // Dolu (opak) kısım vakit yaklaştıkça büyür; kalan süre saydam dilimdir.
+  const prevMs = findPrevPrayerEpoch(days, now.dateKey, now.minutes);
+  const progress =
+    prevMs !== null && targetMs > prevMs
+      ? Math.min(1, Math.max(0, (nowMs - prevMs) / (targetMs - prevMs)))
+      : 1;
+
   return (
     <div className="next-card">
+      <div
+        className="next-card-fade"
+        style={{ width: `${((1 - progress) * 100).toFixed(2)}%` }}
+        aria-hidden="true"
+      />
       <div className="next-card-icon">
         <PrayerIcon prayerKey={next.def.key} size={36} />
       </div>
@@ -73,6 +85,8 @@ function PrayerList() {
   if (!today) return null;
   const dayLog = logs[today.date];
   const tracking = settings.tracking;
+  // Şu an içinde bulunulan vakit (imsaktan önce yatsı devam ediyor sayılır)
+  const activeKey = activeTimeKey(today, now.minutes);
 
   return (
     <div className="card prayer-list">
@@ -80,12 +94,15 @@ function PrayerList() {
         <PrayerRowView key={def.key} def={def} />
       ))}
       {/* Güneş: bilgi satırı, işaretlenemez */}
-      <div className="prayer-row info">
+      <div className={`prayer-row info${activeKey === "gunes" ? " now" : ""}`}>
         <span className="prayer-row-icon">
           <TimeIcon timeKey="gunes" />
         </span>
         <div className="prayer-row-main">
-          <div className="prayer-row-name">Güneş</div>
+          <div className="prayer-row-name">
+            Güneş
+            {activeKey === "gunes" && <span className="now-badge">Şu an</span>}
+          </div>
           <div className="prayer-row-status">Sabah namazının vakti çıkar</div>
         </div>
         <span className="prayer-row-time">{today.times.gunes}</span>
@@ -113,13 +130,17 @@ function PrayerList() {
       toast(msg);
     };
 
+    const isNow = def.timeKey === activeKey;
     return (
-      <div className={`prayer-row${status === "current" ? " current" : ""}`}>
+      <div className={`prayer-row${isNow ? " now" : ""}`}>
         <span className="prayer-row-icon">
           <TimeIcon timeKey={def.timeKey} />
         </span>
         <div className="prayer-row-main">
-          <div className="prayer-row-name">{def.name}</div>
+          <div className="prayer-row-name">
+            {def.name}
+            {isNow && <span className="now-badge">Şu an</span>}
+          </div>
           <div className={`prayer-row-status ${tracking ? (STATUS_CLASS[status] ?? "") : ""}`}>
             {label}
           </div>

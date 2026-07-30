@@ -187,6 +187,25 @@ a {
   display: flex;
   align-items: center;
   gap: var(--sp-4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Kalan süre dilimi: sağdan sola soluk örtü; vakit yaklaştıkça daralır,
+   kart soldan sağa "dolar" */
+.next-card-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--card-fade);
+  transition: width 1s linear;
+  pointer-events: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.next-card > :not(.next-card-fade) {
+  position: relative;
 }
 
 :root[data-theme="dark"] .next-card {
@@ -298,8 +317,23 @@ a {
   margin-top: 2px;
 }
 
-.prayer-row.current {
+/* Şu an içinde bulunulan vakit */
+.prayer-row.now {
   background: var(--primary-soft);
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.now-badge {
+  display: inline-block;
+  margin-left: var(--sp-2);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--primary);
+  background: var(--surface);
+  border: 1px solid var(--primary);
+  border-radius: var(--r-full);
+  padding: 0 var(--sp-2);
+  vertical-align: 2px;
 }
 
 .prayer-row-icon {
@@ -345,7 +379,7 @@ a {
   color: var(--text-muted);
 }
 
-.prayer-row.current .prayer-row-time {
+.prayer-row.now .prayer-row-time {
   color: var(--text);
 }
 

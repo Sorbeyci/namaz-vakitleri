@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { useAuth } from "../features/auth/AuthContext";
+import { enablePush } from "../features/notifications/push";
 import {
   IconCalendar,
   IconFajr,
@@ -37,7 +39,20 @@ function OfflineBanner() {
 export function AppShell() {
   const { citySlug, pickerOpen } = useTimes();
   const { settings } = useSettings();
+  const { user } = useAuth();
   useNotificationScheduler();
+
+  // Girişli kullanıcının FCM token'ını güncel tut (token zaman içinde yenilenebilir)
+  useEffect(() => {
+    if (
+      user &&
+      settings.notif.enabled &&
+      typeof Notification !== "undefined" &&
+      Notification.permission === "granted"
+    ) {
+      void enablePush(user.uid);
+    }
+  }, [user, settings.notif.enabled]);
 
   // Takip modu kapalıyken takvim ve istatistik menüde gösterilmez
   const navItems = settings.tracking

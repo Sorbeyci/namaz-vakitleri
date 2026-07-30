@@ -13,6 +13,7 @@ import {
 } from "../components/icons";
 import { Sheet, Switch, useToast } from "../components/ui";
 import { useAuth } from "../features/auth/AuthContext";
+import { disablePush, enablePush, pushConfigured } from "../features/notifications/push";
 import { useSettings } from "../features/settings/SettingsContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLocateCity } from "../features/city/useLocateCity";
@@ -35,6 +36,7 @@ export function ProfilePage() {
   const toggleNotifications = async () => {
     if (settings.notif.enabled) {
       setNotif({ enabled: false });
+      if (user) void disablePush(user.uid);
       toast("Namaz hatırlatmaları kapatıldı.");
       return;
     }
@@ -49,7 +51,16 @@ export function ProfilePage() {
       return;
     }
     setNotif({ enabled: true });
-    toast("Namaz hatırlatmaları açıldı.");
+    if (user && pushConfigured()) {
+      const ok = await enablePush(user.uid);
+      toast(
+        ok
+          ? "Hatırlatmalar açıldı; uygulama kapalıyken de bildirim alacaksın."
+          : "Hatırlatmalar açıldı (bu cihazda yalnızca uygulama açıkken).",
+      );
+    } else {
+      toast("Namaz hatırlatmaları açıldı.");
+    }
   };
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -173,7 +184,11 @@ export function ProfilePage() {
               />
             </div>
             <div className="caption" style={{ textAlign: "left", marginTop: "var(--sp-2)" }}>
-              Hatırlatmalar uygulama veya sekme açıkken (arka planda dahil) gösterilir.
+              {user && pushConfigured()
+                ? "Bildirimler uygulama kapalıyken de gönderilir."
+                : user
+                  ? "Bu sürümde hatırlatmalar uygulama açıkken gösterilir."
+                  : "Uygulama kapalıyken de bildirim almak için Google ile giriş yap."}
             </div>
           </div>
         )}

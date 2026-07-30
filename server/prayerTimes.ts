@@ -10,7 +10,8 @@
 // kapsandığı sürece upstream'e gidilmez. Upstream hatasında eldeki son
 // geçerli veri (stale) döndürülür.
 
-import type { Firestore } from "firebase-admin/firestore";
+import { getAdminDb } from "./admin.js";
+import { addDays, todayIstanbul } from "./time.js";
 import { CITY_BY_SLUG, slugifyCity } from "../src/lib/cities.js";
 
 type TimeKey = "imsak" | "gunes" | "ogle" | "ikindi" | "aksam" | "yatsi";
@@ -42,22 +43,6 @@ const TR_MONTH_INDEX: Record<string, number> = {
   Ocak: 1, Şubat: 2, Mart: 3, Nisan: 4, Mayıs: 5, Haziran: 6,
   Temmuz: 7, Ağustos: 8, Eylül: 9, Ekim: 10, Kasım: 11, Aralık: 12,
 };
-
-function todayIstanbul(): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Istanbul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
-
-function addDays(key: string, n: number): string {
-  const [y, m, d] = key.split("-").map(Number);
-  const dt = new Date(Date.UTC(y, m - 1, d));
-  dt.setUTCDate(dt.getUTCDate() + n);
-  return dt.toISOString().slice(0, 10);
-}
 
 /** "29 Temmuz 2026 Çarşamba" → { date: "2026-07-29", weekday: "Çarşamba" } */
 function parseMiladi(miladi: string): { date: string; weekday: string } | null {
@@ -105,28 +90,6 @@ function normalize(vakitler: UpstreamDay[], requestDay: string): NormalizedDay[]
 }
 
 // ---- İsteğe bağlı Firestore cache (Admin SDK) ----
-
-let adminDbPromise: Promise<Firestore | null> | null = null;
-
-function getAdminDb(): Promise<Firestore | null> {
-  if (!adminDbPromise) {
-    adminDbPromise = (async () => {
-      const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
-      if (!raw) return null;
-      try {
-        const { initializeApp, cert, getApps } = await import("firebase-admin/app");
-        const { getFirestore } = await import("firebase-admin/firestore");
-        const creds = JSON.parse(raw);
-        const app = getApps()[0] ?? initializeApp({ credential: cert(creds) });
-        return getFirestore(app);
-      } catch (err) {
-        console.error("[prayer-times] Firestore cache devre dışı:", err);
-        return null;
-      }
-    })();
-  }
-  return adminDbPromise;
-}
 
 async function readPersistentCache(slug: string): Promise<CacheEntry | null> {
   const db = await getAdminDb();
