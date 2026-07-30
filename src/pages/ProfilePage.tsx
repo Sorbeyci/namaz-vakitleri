@@ -34,6 +34,30 @@ export function ProfilePage() {
   const { settings, setTracking, setNotif } = useSettings();
   const toast = useToast();
 
+  // Push zincirinden bağımsız, yalnızca bu cihazın bildirim gösterimini dener
+  const localTestNotification = async () => {
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") {
+      toast("Önce bildirim iznini açman gerekiyor.");
+      return;
+    }
+    try {
+      const reg = await navigator.serviceWorker?.getRegistration();
+      if (reg) {
+        await reg.showNotification("Test bildirimi", {
+          body: "Bu cihazda bildirim gösterimi çalışıyor.",
+          icon: "/icons/icon-192.png",
+          badge: "/icons/icon-192.png",
+          tag: "local-test",
+        });
+      } else {
+        new Notification("Test bildirimi", { body: "Bu cihazda bildirim gösterimi çalışıyor." });
+      }
+    } catch (err) {
+      console.error(err);
+      toast("Bildirim gösterilemedi.");
+    }
+  };
+
   const toggleNotifications = async () => {
     if (settings.notif.enabled) {
       setNotif({ enabled: false });
@@ -205,6 +229,13 @@ export function ProfilePage() {
                 label="Vakit girince de bildir"
               />
             </div>
+            <button
+              className="btn btn-subtle btn-sm btn-block"
+              style={{ marginTop: "var(--sp-3)" }}
+              onClick={localTestNotification}
+            >
+              <IconBell size={16} /> Bu cihazda bildirim testi
+            </button>
             <div className="caption" style={{ textAlign: "left", marginTop: "var(--sp-2)" }}>
               {user && pushConfigured()
                 ? "Bildirimler uygulama kapalıyken de gönderilir."
