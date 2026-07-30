@@ -7,7 +7,9 @@ import {
   IconFajr,
   IconProfile,
   IconStats,
+  IconUsers,
 } from "./icons";
+import { useHasFriends } from "../features/friends/useHasFriends";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useSettings } from "../features/settings/SettingsContext";
 import { useNotificationScheduler } from "../features/notifications/useNotificationScheduler";
@@ -40,6 +42,7 @@ export function AppShell() {
   const { citySlug, pickerOpen } = useTimes();
   const { settings } = useSettings();
   const { user } = useAuth();
+  const hasFriends = useHasFriends();
   useNotificationScheduler();
 
   // Girişli kullanıcının FCM token'ını güncel tut (token zaman içinde yenilenebilir)
@@ -54,10 +57,18 @@ export function AppShell() {
     }
   }, [user, settings.notif.enabled]);
 
-  // Takip modu kapalıyken takvim ve istatistik menüde gösterilmez
-  const navItems = settings.tracking
-    ? NAV
-    : NAV.filter((n) => n.to === "/" || n.to === "/profil");
+  // Takip modu kapalıyken takvim ve istatistik menüde gösterilmez;
+  // Arkadaşlar sekmesi yalnızca en az bir arkadaş varsa görünür
+  const navItems = (
+    settings.tracking ? [...NAV] : NAV.filter((n) => n.to === "/" || n.to === "/profil")
+  );
+  if (hasFriends) {
+    navItems.splice(navItems.length - 1, 0, {
+      to: "/arkadaslar",
+      label: "Arkadaşlar",
+      icon: IconUsers,
+    });
+  }
 
   // İlk kurulum: şehir seçilmeden uygulama akışı başlamaz
   if (!citySlug) {

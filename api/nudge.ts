@@ -92,7 +92,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // 5) Vakit başına gönderen-alıcı çifti için tek hatırlatma
+  // 5) Alıcının kayıtlı cihazı yoksa hatırlatma hakkını tüketme
+  const tokens = (target.fcmTokens ?? []).filter(Boolean);
+  if (!tokens.length) {
+    console.log(`[nudge] ${sender.uid} -> ${targetUid}: token yok`);
+    res.status(200).json({ status: "no_tokens", prayer: prayerName });
+    return;
+  }
+
+  // 6) Vakit başına gönderen-alıcı çifti için tek hatırlatma
   const nudgeRef = db.doc(`users/${targetUid}/nudges/${today}_${current.key}_${sender.uid}`);
   try {
     await nudgeRef.create({ from: sender.uid, prayer: current.key, date: today, at: now });
@@ -101,13 +109,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // 6) Push gönder
-  const tokens = (target.fcmTokens ?? []).filter(Boolean);
-  if (!tokens.length) {
-    res.status(200).json({ status: "no_tokens", prayer: prayerName });
-    return;
-  }
+  // 7) Push gönder
   const { getMessaging } = await import("firebase-admin/messaging");
+  const { FieldValue } = await import("firebase-admin/firestore");
   const senderName = sender.name || "Bir arkadaşın";
   const resp = await getMessaging(app).sendEachForMulticast({
     tokens,
@@ -122,5 +126,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       fcmOptions: { link: SITE_URL },
     },
   });
+  const invalid: string[] = [];
+  resp.responses.forEach((r, i) => {
+    if (!r.error) return;
+    console.error(`[nudge] hata (${tokens[i].slice(0, 12)}…):`, r.error.code, r.error.message);
+    if (
+      r.error.code.includes("registration-token-not-registered") ||
+      r.error.code.includes("invalid-argument")
+    ) {
+      invalid.push(tokens[i]);
+    }
+  });
+  if (invalid.length) {
+    await targetDoc.ref.update({ fcmTokens: FieldValue.arrayRemove(...invalid) }).catch(() => {});
+  }
+  console.log(`[nudge] ${sender.uid} -> ${targetUid}: ${resp.successCount}/${tokens.length} gönderildi`);
+  if (resp.successCount === 0) {
+    // Bildirim hiçbir cihaza ulaşmadıysa hakkı iade et, tekrar denenebilsin
+    await nudgeRef.delete().catch(() => {});
+    res.status(200).json({ status: "delivery_failed", prayer: prayerName });
+    return;
+  }
   res.status(200).json({ status: "sent", prayer: prayerName, sent: resp.successCount });
 }

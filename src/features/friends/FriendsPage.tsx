@@ -278,7 +278,10 @@ export function FriendsPage() {
             break;
           case "no_tokens":
           case "no_city":
-            toast(`${first} bildirimlere kapalı; hatırlatma iletilemedi.`);
+            toast(`${first} henüz bildirimleri açmamış; hatırlatma iletilemedi.`);
+            break;
+          case "delivery_failed":
+            toast(`${first} cihazına ulaşılamadı; bildirimleri yeniden açması gerekebilir.`);
             break;
           default:
             toast("Hatırlatma gönderilemedi. Lütfen tekrar dene.");
