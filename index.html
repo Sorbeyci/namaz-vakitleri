@@ -20,6 +20,8 @@
           t === "dark" ||
           (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
         document.documentElement.dataset.theme = dark ? "dark" : "light";
+        var a = localStorage.getItem("namaz:accent");
+        if (a) document.documentElement.dataset.accent = a;
       } catch (e) {}
     </script>
   </head>

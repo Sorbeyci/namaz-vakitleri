@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dolgulu sürüm: maskable ve iOS ana ekran ikonu için (bu ikisi saydam olamaz) -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#158273"/>
+      <stop offset="1" stop-color="#0c4f47"/>
+    </linearGradient>
+    <mask id="cres">
+      <rect width="512" height="512" fill="white"/>
+      <circle cx="332" cy="204" r="134" fill="black"/>
+    </mask>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <circle cx="246" cy="278" r="164" fill="#f2f7f5" mask="url(#cres)"/>
+  <g transform="translate(360,152)" fill="#f2f7f5">
+    <rect x="-40" y="-40" width="80" height="80" rx="10"/>
+    <rect x="-40" y="-40" width="80" height="80" rx="10" transform="rotate(45)"/>
+  </g>
+</svg>

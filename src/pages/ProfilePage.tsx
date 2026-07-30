@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   IconBell,
+  IconCheck,
   IconChevronRight,
   IconCity,
   IconGoogle,
@@ -17,7 +18,7 @@ import { disablePush, enablePush, pushConfigured } from "../features/notificatio
 import { useSettings } from "../features/settings/SettingsContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLocateCity } from "../features/city/useLocateCity";
-import { useTheme, type ThemePref } from "../theme/ThemeContext";
+import { ACCENTS, useTheme, type ThemePref } from "../theme/ThemeContext";
 
 const THEME_OPTIONS: { value: ThemePref; label: string }[] = [
   { value: "light", label: "Açık" },
@@ -29,7 +30,7 @@ export function ProfilePage() {
   const { user, signIn, signOutUser, deleteAccountAndData } = useAuth();
   const { cityLabel, openPicker } = useTimes();
   const { locate, locating } = useLocateCity();
-  const { pref, setPref } = useTheme();
+  const { pref, setPref, accent, setAccent } = useTheme();
   const { settings, setTracking, setNotif } = useSettings();
   const toast = useToast();
 
@@ -134,6 +135,27 @@ export function ProfilePage() {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="settings-row" style={{ paddingBottom: 0 }}>
+          <span style={{ width: 20 }} />
+          <span className="grow" style={{ fontSize: "var(--fs-sm)", color: "var(--text-muted)" }}>
+            Tema rengi
+          </span>
+        </div>
+        <div className="swatch-row">
+          {ACCENTS.map((a) => (
+            <button
+              key={a.key}
+              className={`swatch${accent === a.key ? " active" : ""}`}
+              style={{ background: a.color }}
+              onClick={() => setAccent(a.key)}
+              aria-label={`${a.label} teması`}
+              title={a.label}
+            >
+              {accent === a.key && <IconCheck size={16} />}
+            </button>
+          ))}
         </div>
 
         <div className="settings-row">

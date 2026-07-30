@@ -22,6 +22,9 @@
   --overlay: rgba(23, 32, 29, 0.45);
   /* Sıradaki namaz kartında "kalan süre" diliminin soluk örtüsü */
   --card-fade: rgba(246, 244, 239, 0.38);
+  /* Sıradaki namaz kartı degrade uçları */
+  --card-a: #11675c;
+  --card-b: #0c4f47;
 
   /* tipografi */
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
@@ -73,6 +76,53 @@
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 6px 20px rgba(0, 0, 0, 0.3);
   --overlay: rgba(0, 0, 0, 0.55);
   --card-fade: rgba(16, 25, 23, 0.52);
+  --card-a: #1d4a42;
+  --card-b: #132e29;
 
   color-scheme: dark;
+}
+
+/* ---- Tema renkleri (İslami sanat paletleri) ----
+   Zümrüt varsayılandır (yukarıdaki değerler); diğerleri data-accent ile seçilir. */
+
+:root[data-accent="firuze"] {
+  --primary: #0d7285;
+  --primary-soft: #dcedf2;
+  --card-a: #0d7285;
+  --card-b: #09525f;
+}
+
+:root[data-theme="dark"][data-accent="firuze"] {
+  --primary: #48a9bd;
+  --primary-soft: #16323a;
+  --card-a: #1c4650;
+  --card-b: #122e35;
+}
+
+:root[data-accent="lacivert"] {
+  --primary: #2e4b96;
+  --primary-soft: #e3e9f6;
+  --card-a: #2e4b96;
+  --card-b: #20356e;
+}
+
+:root[data-theme="dark"][data-accent="lacivert"] {
+  --primary: #7d9bdc;
+  --primary-soft: #1c2540;
+  --card-a: #263a63;
+  --card-b: #182545;
+}
+
+:root[data-accent="kehribar"] {
+  --primary: #8a5f14;
+  --primary-soft: #f4ead4;
+  --card-a: #8a5f14;
+  --card-b: #6b4a0e;
+}
+
+:root[data-theme="dark"][data-accent="kehribar"] {
+  --primary: #cfa24e;
+  --primary-soft: #2f2717;
+  --card-a: #4d3a14;
+  --card-b: #33260d;
 }

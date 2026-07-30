@@ -1,13 +1,20 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Saydam arka planlı İslami motif: hilal + sekiz köşeli yıldız (Rub'ul Hizb) -->
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#158273"/>
       <stop offset="1" stop-color="#0c4f47"/>
     </linearGradient>
+    <mask id="cres">
+      <rect width="512" height="512" fill="white"/>
+      <circle cx="342" cy="192" r="152" fill="black"/>
+    </mask>
   </defs>
-  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
-  <g stroke="#f2f7f5" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" fill="none">
-    <path d="M394 306a150 150 0 0 1-190-190 150 150 0 1 0 190 190Z"/>
-    <path d="M356 122l12 28 28 12-28 12-12 28-12-28-28-12 28-12 12-28Z" fill="#f2f7f5" stroke-width="14"/>
+  <!-- hilal -->
+  <circle cx="244" cy="276" r="186" fill="url(#g)" mask="url(#cres)"/>
+  <!-- sekiz köşeli yıldız -->
+  <g transform="translate(374,138)" fill="url(#g)">
+    <rect x="-46" y="-46" width="92" height="92" rx="12"/>
+    <rect x="-46" y="-46" width="92" height="92" rx="12" transform="rotate(45)"/>
   </g>
 </svg>

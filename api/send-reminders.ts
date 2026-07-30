@@ -36,6 +36,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { FieldValue } = await import("firebase-admin/firestore");
   const messaging = getMessaging(app);
 
+  // Test modu: ?test=1 ile çağrılırsa bildirim açık tüm kullanıcılara anında
+  // bir deneme bildirimi gönderir — FCM zincirini beklemeden doğrulamak için.
+  if (req.query.test !== undefined) {
+    const snap = await db.collection("users").where("settings.notif.enabled", "==", true).get();
+    let testSent = 0;
+    let tokenCount = 0;
+    for (const d of snap.docs) {
+      const tokens = ((d.data().fcmTokens as string[] | undefined) ?? []).filter(Boolean);
+      if (!tokens.length) continue;
+      tokenCount += tokens.length;
+      const resp = await messaging.sendEachForMulticast({
+        tokens,
+        webpush: {
+          notification: {
+            title: "Test bildirimi",
+            body: "Namaz hatırlatmaları bu cihazda çalışıyor.",
+            icon: "/icons/icon-192.png",
+            badge: "/icons/icon-192.png",
+            tag: "test",
+          },
+          fcmOptions: { link: SITE_URL },
+        },
+      });
+      testSent += resp.successCount;
+      resp.responses.forEach((r, i) => {
+        if (r.error) console.error(`[reminders] test hata (${tokens[i].slice(0, 12)}…):`, r.error.code, r.error.message);
+      });
+    }
+    res.status(200).json({ test: true, tokens: tokenCount, sent: testSent });
+    return;
+  }
+
   const now = Date.now();
   // Pencere: son çalıştırmadan şimdiye; cron aksarsa en fazla 10 dk geriye bak
   const stateRef = db.collection("reminders").doc("state");

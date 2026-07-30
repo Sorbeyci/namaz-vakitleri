@@ -4,6 +4,8 @@ export const KEYS = {
   city: "namaz:city",
   recentCities: "namaz:recentCities",
   theme: "namaz:theme",
+  accent: "namaz:accent",
+  citySource: "namaz:citySource",
   logs: "namaz:logs",
   installDismissed: "namaz:installDismissed",
   settings: "namaz:settings",

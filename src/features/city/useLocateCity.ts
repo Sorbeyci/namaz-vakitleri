@@ -23,7 +23,7 @@ export function useLocateCity() {
       (pos) => {
         setLocating(false);
         const city = nearestCity(pos.coords.latitude, pos.coords.longitude);
-        selectCity(city.slug);
+        selectCity(city.slug, "location");
         toast(`Konumuna göre şehir seçildi: ${city.name}`);
       },
       (err) => {

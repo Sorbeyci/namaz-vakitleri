@@ -36,7 +36,9 @@ interface TimesContextValue {
   tomorrow: DayTimes | null;
   now: IstanbulNow;
   recentCities: string[];
-  selectCity: (slug: string) => void;
+  /** Şehrin nasıl seçildiği — "location" ise konumdan otomatik bulundu */
+  citySource: "manual" | "location";
+  selectCity: (slug: string, source?: "manual" | "location") => void;
   retry: () => void;
   pickerOpen: boolean;
   openPicker: () => void;
@@ -81,6 +83,9 @@ export function TimesProvider({ children }: { children: ReactNode }) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [recentCities, setRecentCities] = useState<string[]>(
     () => readJSON<string[]>(KEYS.recentCities) ?? [],
+  );
+  const [citySource, setCitySource] = useState<"manual" | "location">(() =>
+    readString(KEYS.citySource) === "location" ? "location" : "manual",
   );
   const loadSeq = useRef(0);
 
@@ -152,9 +157,11 @@ export function TimesProvider({ children }: { children: ReactNode }) {
   }, [profile]);
 
   const selectCity = useCallback(
-    (slug: string) => {
+    (slug: string, source: "manual" | "location" = "manual") => {
       setCitySlug(slug);
       writeString(KEYS.city, slug);
+      setCitySource(source);
+      writeString(KEYS.citySource, source);
       setRecentCities((prev) => {
         const next = [slug, ...prev.filter((s) => s !== slug)].slice(0, 5);
         writeJSON(KEYS.recentCities, next);
@@ -181,6 +188,7 @@ export function TimesProvider({ children }: { children: ReactNode }) {
       tomorrow: days.find((d) => d.date === addDaysKey(now.dateKey, 1)) ?? null,
       now,
       recentCities,
+      citySource,
       selectCity,
       retry: () => {
         if (citySlug) void load(citySlug);
@@ -189,7 +197,7 @@ export function TimesProvider({ children }: { children: ReactNode }) {
       openPicker: () => setPickerOpen(true),
       closePicker: () => setPickerOpen(false),
     };
-  }, [citySlug, data, status, stale, errorMessage, now, recentCities, selectCity, pickerOpen, load]);
+  }, [citySlug, data, status, stale, errorMessage, now, recentCities, citySource, selectCity, pickerOpen, load]);
 
   return <TimesContext.Provider value={value}>{children}</TimesContext.Provider>;
 }

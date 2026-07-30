@@ -6,6 +6,7 @@ import {
   IconChevronRight,
   IconGoogle,
   IconInfo,
+  IconLocation,
   IconPending,
   IconProfile,
   IconQada,
@@ -215,23 +216,36 @@ function PrayerList() {
 }
 
 export function TodayPage() {
-  const { cityLabel, today, status, stale, demo, lastUpdated, errorMessage, retry, openPicker } =
-    useTimes();
+  const {
+    cityLabel,
+    citySource,
+    today,
+    status,
+    stale,
+    demo,
+    lastUpdated,
+    errorMessage,
+    retry,
+    openPicker,
+  } = useTimes();
   const { user, signIn } = useAuth();
 
   return (
     <div className="page">
       <header className="topbar">
-        <div>
+        <div style={{ minWidth: 0 }}>
           <button className="topbar-city" onClick={openPicker} aria-label="Şehir değiştir">
             {cityLabel}
+            {citySource === "location" && (
+              <span className="loc-badge" title="Konumdan bulundu">
+                <IconLocation size={14} />
+              </span>
+            )}
             <IconChevronRight size={18} />
           </button>
           {today && (
             <div className="topbar-dates">
-              {today.miladi}
-              <br />
-              {today.hicri}
+              {today.miladi} <span className="date-sep">•</span> {today.hicri}
             </div>
           )}
         </div>
