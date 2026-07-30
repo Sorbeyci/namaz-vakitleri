@@ -204,8 +204,42 @@ a {
   border-left: 1px solid rgba(255, 255, 255, 0.22);
 }
 
-.next-card > :not(.next-card-fade) {
+/* Son dakikalarda kartı kademeli koyulaştıran örtü */
+.next-card-urgency {
+  position: absolute;
+  inset: 0;
+  background: #032019;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+  pointer-events: none;
+}
+
+.next-card.urgent-15 .next-card-urgency {
+  opacity: 0.25;
+}
+
+.next-card.urgent-10 .next-card-urgency {
+  opacity: 0.45;
+}
+
+.next-card.urgent-5 .next-card-urgency {
+  opacity: 0.62;
+}
+
+.next-card.urgent-5 .pulse-dot {
+  animation-duration: 1s;
+}
+
+.next-card > :not(.next-card-fade):not(.next-card-urgency) {
   position: relative;
+}
+
+/* Sayaç rakamları sabit genişlikte kalır; saniye değişince yazı kaymaz */
+.cd-num {
+  display: inline-block;
+  min-width: 2ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 :root[data-theme="dark"] .next-card {

@@ -18,7 +18,7 @@ import { useSettings } from "../features/settings/SettingsContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLogs } from "../features/tracking/LogsContext";
 import { InstallPrompt } from "../features/pwa/InstallPrompt";
-import { formatDurationSeconds, istanbulEpoch } from "../lib/dates";
+import { istanbulEpoch } from "../lib/dates";
 import { PRAYERS, STATUS_LABELS, type DerivedStatus } from "../lib/prayers";
 import { activeTimeKey, deriveStatus, findNextPrayer, findPrevPrayerEpoch } from "../lib/status";
 
@@ -44,8 +44,23 @@ function NextPrayerCard() {
       ? Math.min(1, Math.max(0, (nowMs - prevMs) / (targetMs - prevMs)))
       : 1;
 
+  const h = Math.floor(secondsLeft / 3600);
+  const m = Math.floor((secondsLeft % 3600) / 60);
+  const s = secondsLeft % 60;
+
+  // Son 15/10/5 dakikada kart kademeli olarak koyulaşır
+  const urgency =
+    secondsLeft > 0 && secondsLeft <= 300
+      ? " urgent-5"
+      : secondsLeft > 0 && secondsLeft <= 600
+        ? " urgent-10"
+        : secondsLeft > 0 && secondsLeft <= 900
+          ? " urgent-15"
+          : "";
+
   return (
-    <div className="next-card">
+    <div className={`next-card${urgency}`}>
+      <div className="next-card-urgency" aria-hidden="true" />
       <div
         className="next-card-fade"
         style={{ width: `${((1 - progress) * 100).toFixed(2)}%` }}
@@ -60,10 +75,25 @@ function NextPrayerCard() {
         <div className="next-card-time">{next.time}</div>
         <div className="next-card-remaining">
           <span className="pulse-dot" />
-          {secondsLeft === 0
-            ? `${next.def.name} vakti girdi`
-            : `${next.def.name} namazına ${formatDurationSeconds(secondsLeft)} kaldı`}
-          {!next.isToday && " (yarın)"}
+          {secondsLeft === 0 ? (
+            <span>{next.def.name} vakti girdi</span>
+          ) : (
+            <span>
+              {next.def.name} namazına{" "}
+              {h > 0 && (
+                <>
+                  <span className="cd-num">{h}</span> saat{" "}
+                </>
+              )}
+              {(h > 0 || m > 0) && (
+                <>
+                  <span className="cd-num">{m}</span> dakika{" "}
+                </>
+              )}
+              <span className="cd-num">{s}</span> saniye kaldı
+              {!next.isToday && " (yarın)"}
+            </span>
+          )}
         </div>
       </div>
     </div>
