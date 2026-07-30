@@ -5,6 +5,7 @@ import {
   IconChevronRight,
   IconCity,
   IconGoogle,
+  IconHelp,
   IconLocation,
   IconLogout,
   IconPending,
@@ -18,6 +19,7 @@ import { disablePush, enablePush, pushConfigured } from "../features/notificatio
 import { useSettings } from "../features/settings/SettingsContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLocateCity } from "../features/city/useLocateCity";
+import { useOnboarding } from "../features/onboarding/Onboarding";
 import { ACCENTS, useTheme, type ThemePref } from "../theme/ThemeContext";
 
 const THEME_OPTIONS: { value: ThemePref; label: string }[] = [
@@ -32,6 +34,7 @@ export function ProfilePage() {
   const { locate, locating } = useLocateCity();
   const { pref, setPref, accent, setAccent } = useTheme();
   const { settings, setTracking, setNotif } = useSettings();
+  const { open: openOnboarding } = useOnboarding();
   const toast = useToast();
 
   // Push zincirinden bağımsız, yalnızca bu cihazın bildirim gösterimini dener
@@ -146,6 +149,20 @@ export function ProfilePage() {
         <div className="settings-row">
           <IconTheme size={20} />
           <span className="grow">Tema</span>
+          <div className="swatch-row inline">
+            {ACCENTS.map((a) => (
+              <button
+                key={a.key}
+                className={`swatch${accent === a.key ? " active" : ""}`}
+                style={{ background: a.color }}
+                onClick={() => setAccent(a.key)}
+                aria-label={`${a.label} teması`}
+                title={a.label}
+              >
+                {accent === a.key && <IconCheck size={12} />}
+              </button>
+            ))}
+          </div>
         </div>
         <div style={{ padding: "0 var(--sp-3) var(--sp-3)" }}>
           <div className="segmented">
@@ -159,27 +176,6 @@ export function ProfilePage() {
               </button>
             ))}
           </div>
-        </div>
-
-        <div className="settings-row" style={{ paddingBottom: 0 }}>
-          <span style={{ width: 20 }} />
-          <span className="grow" style={{ fontSize: "var(--fs-sm)", color: "var(--text-muted)" }}>
-            Tema rengi
-          </span>
-        </div>
-        <div className="swatch-row">
-          {ACCENTS.map((a) => (
-            <button
-              key={a.key}
-              className={`swatch${accent === a.key ? " active" : ""}`}
-              style={{ background: a.color }}
-              onClick={() => setAccent(a.key)}
-              aria-label={`${a.label} teması`}
-              title={a.label}
-            >
-              {accent === a.key && <IconCheck size={16} />}
-            </button>
-          ))}
         </div>
 
         <div className="settings-row">
@@ -271,6 +267,11 @@ export function ProfilePage() {
       </div>
 
       <div className="card settings-list">
+        <button className="settings-row" onClick={openOnboarding}>
+          <IconHelp size={20} />
+          <span className="grow">Uygulama rehberi</span>
+          <IconChevronRight size={16} />
+        </button>
         {user && (
           <button className="settings-row" onClick={signOutUser}>
             <IconLogout size={20} />

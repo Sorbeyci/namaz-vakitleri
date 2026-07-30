@@ -223,6 +223,16 @@ export function IconChevronRight(p: IconProps) {
   );
 }
 
+export function IconHelp(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M9.7 9.3a2.4 2.4 0 1 1 3.3 2.8c-.7.3-1 .8-1 1.6" />
+      <path d="M12 16.6h.01" />
+    </Svg>
+  );
+}
+
 export function IconInfo(p: IconProps) {
   return (
     <Svg {...p}>

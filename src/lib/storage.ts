@@ -9,6 +9,7 @@ export const KEYS = {
   logs: "namaz:logs",
   installDismissed: "namaz:installDismissed",
   settings: "namaz:settings",
+  onboarded: "namaz:onboarded",
   times: (slug: string) => `namaz:times:${slug}`,
 };
 

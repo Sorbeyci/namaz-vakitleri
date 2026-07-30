@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { ToastProvider } from "./components/ui";
 import { AuthProvider } from "./features/auth/AuthContext";
+import { OnboardingProvider } from "./features/onboarding/Onboarding";
 import { SettingsProvider } from "./features/settings/SettingsContext";
 import { TimesProvider } from "./features/prayer-times/TimesContext";
 import { LogsProvider } from "./features/tracking/LogsContext";
@@ -16,6 +17,7 @@ export function App() {
   return (
     <ThemeProvider>
       <ToastProvider>
+        <OnboardingProvider>
         <AuthProvider>
           <SettingsProvider>
             <TimesProvider>
@@ -36,6 +38,7 @@ export function App() {
             </TimesProvider>
           </SettingsProvider>
         </AuthProvider>
+        </OnboardingProvider>
       </ToastProvider>
     </ThemeProvider>
   );
