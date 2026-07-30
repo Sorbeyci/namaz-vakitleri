@@ -1,12 +1,15 @@
 import { useMemo, useState } from "react";
+import { Navigate } from "react-router-dom";
 import {
   IconCheck,
   IconChevronLeft,
   IconChevronRight,
   IconPending,
+  IconQada,
   TimeIcon,
 } from "../components/icons";
 import { Sheet, useToast } from "../components/ui";
+import { useSettings } from "../features/settings/SettingsContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLogs } from "../features/tracking/LogsContext";
 import {
@@ -27,6 +30,7 @@ function pad(n: number) {
 export function CalendarPage() {
   const { now, today } = useTimes();
   const { logs, markPrayer } = useLogs();
+  const { settings } = useSettings();
   const toast = useToast();
   const [year, setYear] = useState(() => Number(now.dateKey.slice(0, 4)));
   const [month, setMonth] = useState(() => Number(now.dateKey.slice(5, 7))); // 1-12
@@ -65,6 +69,9 @@ export function CalendarPage() {
   }
 
   const selectedLog = selected ? logs[selected] : undefined;
+
+  // Takip modu kapalıyken takvim gösterilmez
+  if (!settings.tracking) return <Navigate to="/" replace />;
 
   return (
     <div className="page">
@@ -131,7 +138,10 @@ export function CalendarPage() {
                   ? deriveStatus(def, today, selectedLog, now.minutes)
                   : derivePastStatus(selectedLog, def.key);
               const marked = status === "completed" || status === "qada";
-              const canQada = !isToday && status === "missed";
+              const mark = (s: "completed" | "qada" | null, msg: string) => {
+                markPrayer(selected, def.key, s);
+                toast(msg);
+              };
               return (
                 <div key={def.key} className="prayer-row">
                   <span className="prayer-row-icon">
@@ -147,30 +157,37 @@ export function CalendarPage() {
                       {status === "missed" && !isToday ? "Kayıt yok" : STATUS_LABELS[status]}
                     </div>
                   </div>
-                  {canQada ? (
+                  <span className="prayer-row-action">
+                    {status === "missed" && (
+                      <button
+                        className="mark-btn qada-action"
+                        onClick={() =>
+                          mark("qada", `${def.name} namazı kaza edildi olarak kaydedildi.`)
+                        }
+                        aria-label={`${def.name} namazını kaza edildi olarak işaretle`}
+                        title="Kaza edildi olarak işaretle"
+                      >
+                        <IconQada size={18} />
+                      </button>
+                    )}
                     <button
-                      className="qada-btn"
-                      onClick={() => {
-                        markPrayer(selected, def.key, "qada");
-                        toast(`${def.name} namazı kaza edildi olarak kaydedildi.`);
-                      }}
-                    >
-                      Kaza et
-                    </button>
-                  ) : (
-                    <button
-                      className={`mark-btn${marked ? (status === "qada" ? " qada" : " done") : ""}`}
-                      disabled={!marked}
-                      onClick={() => {
-                        if (!marked) return;
-                        markPrayer(selected, def.key, null);
-                        toast(`${def.name} namazı işareti geri alındı.`);
-                      }}
-                      aria-label={marked ? `${def.name} işaretini geri al` : undefined}
+                      className={`mark-btn${marked ? (status === "qada" ? " qada" : " done") : status !== "notYet" ? " markable" : ""}`}
+                      disabled={status === "notYet"}
+                      onClick={() =>
+                        marked
+                          ? mark(null, `${def.name} namazı işareti geri alındı.`)
+                          : mark("completed", `${def.name} namazı kaydedildi.`)
+                      }
+                      aria-label={
+                        marked
+                          ? `${def.name} işaretini geri al`
+                          : `${def.name} namazını kılındı olarak işaretle`
+                      }
+                      title={marked ? "İşareti geri al" : "Kılındı olarak işaretle"}
                     >
                       {marked ? <IconCheck size={20} /> : <IconPending size={20} />}
                     </button>
-                  )}
+                  </span>
                 </div>
               );
             })}

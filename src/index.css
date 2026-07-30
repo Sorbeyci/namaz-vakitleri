@@ -384,14 +384,51 @@ a {
   opacity: 0.5;
 }
 
-.qada-btn {
-  font-size: var(--fs-xs);
-  font-weight: var(--fw-semibold);
+/* Kaza işaretleme: işaretleme butonuyla aynı boyutta ikon buton */
+.mark-btn.qada-action {
+  border-color: var(--accent);
   color: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: var(--r-full);
-  padding: var(--sp-1) var(--sp-3);
+}
+
+/* Sabit genişlikli aksiyon sütunu — buton sayısı değişse de saatler hizalı kalır */
+.prayer-row-action {
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: flex-end;
+  width: 88px;
   flex-shrink: 0;
+}
+
+/* Anahtar (switch) */
+.switch {
+  position: relative;
+  width: 46px;
+  height: 27px;
+  border-radius: var(--r-full);
+  background: var(--border);
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 21px;
+  height: 21px;
+  border-radius: var(--r-full);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease;
+}
+
+.switch.on {
+  background: var(--primary);
+}
+
+.switch.on::after {
+  transform: translateX(19px);
 }
 
 /* ---------- butonlar ---------- */

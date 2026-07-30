@@ -33,6 +33,8 @@ export interface Profile {
   photoURL: string | null;
   city: string | null;
   createdAt: number;
+  /** Uygulama ayarları (SettingsContext yönetir) */
+  settings?: unknown;
 }
 
 interface AuthContextValue {

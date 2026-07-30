@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { ToastProvider } from "./components/ui";
 import { AuthProvider } from "./features/auth/AuthContext";
+import { SettingsProvider } from "./features/settings/SettingsContext";
 import { TimesProvider } from "./features/prayer-times/TimesContext";
 import { LogsProvider } from "./features/tracking/LogsContext";
 import { CalendarPage } from "./pages/CalendarPage";
@@ -16,22 +17,24 @@ export function App() {
     <ThemeProvider>
       <ToastProvider>
         <AuthProvider>
-          <TimesProvider>
-            <LogsProvider>
-              <BrowserRouter>
-                <Routes>
-                  <Route element={<AppShell />}>
-                    <Route path="/" element={<TodayPage />} />
-                    <Route path="/vakitler" element={<MonthlyTimesPage />} />
-                    <Route path="/takvim" element={<CalendarPage />} />
-                    <Route path="/istatistik" element={<StatsPage />} />
-                    <Route path="/profil" element={<ProfilePage />} />
-                    <Route path="*" element={<TodayPage />} />
-                  </Route>
-                </Routes>
-              </BrowserRouter>
-            </LogsProvider>
-          </TimesProvider>
+          <SettingsProvider>
+            <TimesProvider>
+                <LogsProvider>
+                <BrowserRouter>
+                  <Routes>
+                    <Route element={<AppShell />}>
+                      <Route path="/" element={<TodayPage />} />
+                      <Route path="/vakitler" element={<MonthlyTimesPage />} />
+                      <Route path="/takvim" element={<CalendarPage />} />
+                      <Route path="/istatistik" element={<StatsPage />} />
+                      <Route path="/profil" element={<ProfilePage />} />
+                      <Route path="*" element={<TodayPage />} />
+                    </Route>
+                  </Routes>
+                </BrowserRouter>
+              </LogsProvider>
+            </TimesProvider>
+          </SettingsProvider>
         </AuthProvider>
       </ToastProvider>
     </ThemeProvider>

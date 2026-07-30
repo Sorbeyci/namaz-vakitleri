@@ -91,6 +91,29 @@ export function Sheet({
   );
 }
 
+/* ---------- Anahtar (switch) ---------- */
+
+export function Switch({
+  on,
+  onToggle,
+  label,
+}: {
+  on: boolean;
+  onToggle: () => void;
+  label?: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      className={`switch${on ? " on" : ""}`}
+      onClick={onToggle}
+    />
+  );
+}
+
 /* ---------- Basit durum ekranı ---------- */
 
 export function StateScreen({

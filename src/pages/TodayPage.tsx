@@ -8,11 +8,13 @@ import {
   IconInfo,
   IconPending,
   IconProfile,
+  IconQada,
   PrayerIcon,
   TimeIcon,
 } from "../components/icons";
 import { Spinner, StateScreen, useToast } from "../components/ui";
 import { useAuth } from "../features/auth/AuthContext";
+import { useSettings } from "../features/settings/SettingsContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLogs } from "../features/tracking/LogsContext";
 import { InstallPrompt } from "../features/pwa/InstallPrompt";
@@ -66,9 +68,11 @@ const STATUS_CLASS: Partial<Record<DerivedStatus, string>> = {
 function PrayerList() {
   const { today, now } = useTimes();
   const { logs, markPrayer } = useLogs();
+  const { settings } = useSettings();
   const toast = useToast();
   if (!today) return null;
   const dayLog = logs[today.date];
+  const tracking = settings.tracking;
 
   return (
     <div className="card prayer-list">
@@ -85,7 +89,7 @@ function PrayerList() {
           <div className="prayer-row-status">Sabah namazının vakti çıkar</div>
         </div>
         <span className="prayer-row-time">{today.times.gunes}</span>
-        <span style={{ width: 40 }} />
+        {tracking && <span className="prayer-row-action" />}
       </div>
       {PRAYERS.slice(1).map((def) => (
         <PrayerRowView key={def.key} def={def} />
@@ -95,20 +99,18 @@ function PrayerList() {
 
   function PrayerRowView({ def }: { def: (typeof PRAYERS)[number] }) {
     const t = today!;
-    const status = deriveStatus(def, t, dayLog, now.minutes);
+    // Takip kapalıyken kayıtlar yok sayılır; yalnızca saat bilgisi gösterilir
+    const status = deriveStatus(def, t, tracking ? dayLog : undefined, now.minutes);
     const marked = status === "completed" || status === "qada";
+    const label = tracking
+      ? STATUS_LABELS[status]
+      : status === "missed"
+        ? "Vakti çıktı"
+        : STATUS_LABELS[status];
 
-    const onMark = () => {
-      if (marked) {
-        markPrayer(t.date, def.key, null);
-        toast(`${def.name} namazı işareti geri alındı.`);
-      } else if (status === "current") {
-        markPrayer(t.date, def.key, "completed");
-        toast(`${def.name} namazı kaydedildi.`);
-      } else if (status === "missed") {
-        markPrayer(t.date, def.key, "qada");
-        toast(`${def.name} namazı kaza edildi olarak kaydedildi.`);
-      }
+    const mark = (s: "completed" | "qada" | null, msg: string) => {
+      markPrayer(t.date, def.key, s);
+      toast(msg);
     };
 
     return (
@@ -118,28 +120,43 @@ function PrayerList() {
         </span>
         <div className="prayer-row-main">
           <div className="prayer-row-name">{def.name}</div>
-          <div className={`prayer-row-status ${STATUS_CLASS[status] ?? ""}`}>
-            {STATUS_LABELS[status]}
+          <div className={`prayer-row-status ${tracking ? (STATUS_CLASS[status] ?? "") : ""}`}>
+            {label}
           </div>
         </div>
         <span className="prayer-row-time">{t.times[def.timeKey]}</span>
-        {status === "missed" ? (
-          <button className="qada-btn" onClick={onMark}>
-            Kaza et
-          </button>
-        ) : (
-          <button
-            className={`mark-btn${marked ? (status === "qada" ? " qada" : " done") : status === "current" ? " markable" : ""}`}
-            onClick={onMark}
-            disabled={status === "notYet"}
-            aria-label={
-              marked
-                ? `${def.name} işaretini geri al`
-                : `${def.name} namazını kılındı olarak işaretle`
-            }
-          >
-            {marked ? <IconCheck size={20} /> : <IconPending size={20} />}
-          </button>
+        {tracking && (
+          <span className="prayer-row-action">
+            {status === "missed" && (
+              <button
+                className="mark-btn qada-action"
+                onClick={() =>
+                  mark("qada", `${def.name} namazı kaza edildi olarak kaydedildi.`)
+                }
+                aria-label={`${def.name} namazını kaza edildi olarak işaretle`}
+                title="Kaza edildi olarak işaretle"
+              >
+                <IconQada size={18} />
+              </button>
+            )}
+            <button
+              className={`mark-btn${marked ? (status === "qada" ? " qada" : " done") : status !== "notYet" ? " markable" : ""}`}
+              onClick={() =>
+                marked
+                  ? mark(null, `${def.name} namazı işareti geri alındı.`)
+                  : mark("completed", `${def.name} namazı kaydedildi.`)
+              }
+              disabled={status === "notYet"}
+              aria-label={
+                marked
+                  ? `${def.name} işaretini geri al`
+                  : `${def.name} namazını kılındı olarak işaretle`
+              }
+              title={marked ? "İşareti geri al" : "Kılındı olarak işaretle"}
+            >
+              {marked ? <IconCheck size={20} /> : <IconPending size={20} />}
+            </button>
+          </span>
         )}
       </div>
     );

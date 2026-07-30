@@ -6,12 +6,14 @@ import {
   IconGoogle,
   IconLocation,
   IconLogout,
+  IconPending,
   IconProfile,
   IconTheme,
   IconTrash,
 } from "../components/icons";
-import { Sheet, useToast } from "../components/ui";
+import { Sheet, Switch, useToast } from "../components/ui";
 import { useAuth } from "../features/auth/AuthContext";
+import { useSettings } from "../features/settings/SettingsContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLocateCity } from "../features/city/useLocateCity";
 import { useTheme, type ThemePref } from "../theme/ThemeContext";
@@ -27,7 +29,28 @@ export function ProfilePage() {
   const { cityLabel, openPicker } = useTimes();
   const { locate, locating } = useLocateCity();
   const { pref, setPref } = useTheme();
+  const { settings, setTracking, setNotif } = useSettings();
   const toast = useToast();
+
+  const toggleNotifications = async () => {
+    if (settings.notif.enabled) {
+      setNotif({ enabled: false });
+      toast("Namaz hatırlatmaları kapatıldı.");
+      return;
+    }
+    if (typeof Notification === "undefined") {
+      toast("Bu tarayıcıda bildirim desteği yok. (iPhone'da uygulamayı ana ekrana eklemen gerekir.)");
+      return;
+    }
+    let perm = Notification.permission;
+    if (perm === "default") perm = await Notification.requestPermission();
+    if (perm !== "granted") {
+      toast("Bildirim izni verilmedi. Tarayıcı ayarlarından izin verebilirsin.");
+      return;
+    }
+    setNotif({ enabled: true });
+    toast("Namaz hatırlatmaları açıldı.");
+  };
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -104,8 +127,78 @@ export function ProfilePage() {
 
         <div className="settings-row">
           <IconBell size={20} />
-          <span className="grow">Bildirimler</span>
-          <span className="value">Yakında</span>
+          <span className="grow">Namaz hatırlatması</span>
+          <Switch
+            on={settings.notif.enabled}
+            onToggle={toggleNotifications}
+            label="Namaz hatırlatması"
+          />
+        </div>
+        {settings.notif.enabled && (
+          <div style={{ padding: "0 var(--sp-3) var(--sp-3)" }}>
+            <div
+              style={{
+                fontSize: "var(--fs-sm)",
+                color: "var(--text-muted)",
+                marginBottom: "var(--sp-2)",
+              }}
+            >
+              Vakitten kaç dakika önce?
+            </div>
+            <div className="segmented">
+              {([10, 15, 30] as const).map((m) => (
+                <button
+                  key={m}
+                  className={settings.notif.offsetMinutes === m ? "active" : ""}
+                  onClick={() => setNotif({ offsetMinutes: m })}
+                >
+                  {m} dk
+                </button>
+              ))}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--sp-3)",
+                marginTop: "var(--sp-3)",
+                fontSize: "var(--fs-sm)",
+              }}
+            >
+              <span style={{ flex: 1 }}>Vakit girince de bildir</span>
+              <Switch
+                on={settings.notif.atTime}
+                onToggle={() => setNotif({ atTime: !settings.notif.atTime })}
+                label="Vakit girince de bildir"
+              />
+            </div>
+            <div className="caption" style={{ textAlign: "left", marginTop: "var(--sp-2)" }}>
+              Hatırlatmalar uygulama veya sekme açıkken (arka planda dahil) gösterilir.
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="card settings-list">
+        <div className="settings-row">
+          <IconPending size={20} />
+          <span className="grow">Namaz takibi</span>
+          <Switch
+            on={settings.tracking}
+            onToggle={() => {
+              setTracking(!settings.tracking);
+              toast(
+                settings.tracking
+                  ? "Namaz takibi kapatıldı; takvim ve istatistik gizlendi."
+                  : "Namaz takibi açıldı.",
+              );
+            }}
+            label="Namaz takibi"
+          />
+        </div>
+        <div className="caption" style={{ textAlign: "left", padding: "0 var(--sp-3) var(--sp-3)" }}>
+          Kapalıyken işaretleme butonları, takvim ve istatistik gösterilmez;
+          kayıtların silinmez.
         </div>
       </div>
 

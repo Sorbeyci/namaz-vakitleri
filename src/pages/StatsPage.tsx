@@ -1,4 +1,6 @@
 import { useMemo } from "react";
+import { Navigate } from "react-router-dom";
+import { useSettings } from "../features/settings/SettingsContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLogs } from "../features/tracking/LogsContext";
 import { addDaysKey, weekdayIndex } from "../lib/dates";
@@ -24,6 +26,7 @@ function countDay(day: Record<string, unknown> | undefined): number {
 export function StatsPage() {
   const { now } = useTimes();
   const { logs } = useLogs();
+  const { settings } = useSettings();
 
   const stats = useMemo<Stats>(() => {
     const today = now.dateKey;
@@ -83,6 +86,9 @@ export function StatsPage() {
       weakest,
     };
   }, [logs, now.dateKey]);
+
+  // Takip modu kapalıyken istatistik gösterilmez
+  if (!settings.tracking) return <Navigate to="/" replace />;
 
   return (
     <div className="page">

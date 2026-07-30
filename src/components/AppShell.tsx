@@ -7,6 +7,8 @@ import {
   IconStats,
 } from "./icons";
 import { useTimes } from "../features/prayer-times/TimesContext";
+import { useSettings } from "../features/settings/SettingsContext";
+import { useNotificationScheduler } from "../features/notifications/useNotificationScheduler";
 import { CityPicker } from "../features/city/CityPicker";
 
 const NAV = [
@@ -34,6 +36,13 @@ function OfflineBanner() {
 
 export function AppShell() {
   const { citySlug, pickerOpen } = useTimes();
+  const { settings } = useSettings();
+  useNotificationScheduler();
+
+  // Takip modu kapalıyken takvim ve istatistik menüde gösterilmez
+  const navItems = settings.tracking
+    ? NAV
+    : NAV.filter((n) => n.to === "/" || n.to === "/profil");
 
   // İlk kurulum: şehir seçilmeden uygulama akışı başlamaz
   if (!citySlug) {
@@ -53,7 +62,7 @@ export function AppShell() {
       </div>
       <nav className="bottom-nav" aria-label="Ana gezinme">
         <div className="bottom-nav-inner">
-          {NAV.map(({ to, label, icon: Icon }) => (
+          {navItems.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}

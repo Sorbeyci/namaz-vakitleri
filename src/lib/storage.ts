@@ -6,6 +6,7 @@ export const KEYS = {
   theme: "namaz:theme",
   logs: "namaz:logs",
   installDismissed: "namaz:installDismissed",
+  settings: "namaz:settings",
   times: (slug: string) => `namaz:times:${slug}`,
 };
 
