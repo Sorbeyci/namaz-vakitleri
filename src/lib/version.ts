@@ -16,6 +16,7 @@ export const CHANGELOG: ReleaseNote[] = [
       "Arkadaşlar: davet koduyla arkadaş ekleyin, günlük takibi birlikte görün",
       "Arkadaşına tek dokunuşla nazik bir namaz hatırlatması gönder",
       "Cuma günleri öğle vakti \"Cuma\" olarak gösterilir",
+      "Tema ve renk tercihlerin hesabında saklanır, cihazlar arasında eşitlenir",
     ],
   },
   {

@@ -35,6 +35,8 @@ export interface Profile {
   createdAt: number;
   /** Uygulama ayarları (SettingsContext yönetir) */
   settings?: unknown;
+  /** Tema tercihleri (ThemeSync yönetir) */
+  theme?: unknown;
 }
 
 interface AuthContextValue {

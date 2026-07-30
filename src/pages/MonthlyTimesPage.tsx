@@ -4,14 +4,17 @@ import { StateScreen } from "../components/ui";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { TR_MONTHS_SHORT, TR_WEEKDAYS_SHORT, weekdayIndex } from "../lib/dates";
 import { TIME_LABELS } from "../lib/prayers";
+import { activeTimeKey } from "../lib/status";
 
 /**
  * Seçili şehir için önümüzdeki 30 günün vakit listesi.
  * Veri localStorage + service worker'da saklandığı için çevrimdışı da açılır.
  */
 export function MonthlyTimesPage() {
-  const { days, now, cityLabel, status, retry } = useTimes();
+  const { days, now, cityLabel, status, retry, today } = useTimes();
   const upcoming = days.filter((d) => d.date >= now.dateKey);
+  // Bugün satırında, içinde bulunulan vakit hücresi ayrıca vurgulanır
+  const nowKey = today ? activeTimeKey(today, now.minutes) : null;
 
   return (
     <div className="page">
@@ -45,7 +48,14 @@ export function MonthlyTimesPage() {
                     <em>{TR_WEEKDAYS_SHORT[weekdayIndex(d.date)]}</em>
                   </span>
                   {TIME_LABELS.map((t) => (
-                    <span key={t.key}>{d.times[t.key]}</span>
+                    <span
+                      key={t.key}
+                      className={
+                        d.date === now.dateKey && t.key === nowKey ? "tt-active" : undefined
+                      }
+                    >
+                      {d.times[t.key]}
+                    </span>
                   ))}
                 </div>
               );

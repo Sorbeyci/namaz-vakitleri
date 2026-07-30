@@ -50,14 +50,14 @@ Environment Variables (Project Settings → Environment Variables):
 | `DIYANET_API_KEY` | Evet | Diyanet vakitler API anahtarı. **Paylaşılmış eski anahtarı kullanmayın; yeni anahtar alın.** Yalnızca sunucuda kullanılır, tarayıcıya asla inmez. |
 | `FIREBASE_SERVICE_ACCOUNT` | Hayır (önerilir) | Service account JSON'u (tek satır). Verilirse 30 günlük vakit cache'i Firestore `prayerTimesCache` koleksiyonunda kalıcı saklanır; verilmezse bellek içi cache kullanılır. Firebase Console → Project Settings → Service accounts → Generate new private key. |
 | `VITE_FCM_VAPID_KEY` | Push için | Web Push public key (Firebase Console → Project Settings → Cloud Messaging → Web Push certificates → Generate key pair). Uygulama kapalıyken bildirim (FCM) bunu gerektirir; herkese açık bir anahtardır. |
-| `CRON_SECRET` | Push için | `/api/send-reminders` ucunu koruyan rastgele bir parola. Aynı değer GitHub repo secret'ı olarak da eklenmeli (Settings → Secrets → Actions → `CRON_SECRET`); `.github/workflows/reminders.yml` bu uca 5 dakikada bir istek atar. |
+| `CRON_SECRET` | Push için | `/api/send-reminders` ucunu koruyan rastgele bir parola. Harici bir zamanlayıcı (cron-job.org) bu uca 5 dakikada bir `Authorization: Bearer <CRON_SECRET>` başlığıyla POST atar. |
 
 ### Uygulama kapalıyken bildirim (FCM) akışı
 
 1. Kullanıcı profilden hatırlatmayı açar → tarayıcı FCM token'ı alınır ve
    `users/{uid}.fcmTokens` alanına yazılır (yalnızca Google ile girişli
    kullanıcılarda; misafirlerde hatırlatma uygulama açıkken çalışır).
-2. GitHub Actions cron'u 5 dakikada bir `/api/send-reminders` ucunu çağırır.
+2. cron-job.org 5 dakikada bir `/api/send-reminders` ucunu çağırır.
 3. Uç, bildirim açık kullanıcıların şehir vakitlerini sunucu cache'inden okur,
    pencereye düşen "X dk önce" / "vakit girince" bildirimlerini FCM ile
    gönderir; geçersiz token'ları temizler.

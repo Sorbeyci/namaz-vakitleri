@@ -13,6 +13,7 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { StatsPage } from "./pages/StatsPage";
 import { TodayPage } from "./pages/TodayPage";
 import { ThemeProvider } from "./theme/ThemeContext";
+import { ThemeSync } from "./theme/ThemeSync";
 
 export function App() {
   return (
@@ -20,6 +21,7 @@ export function App() {
       <ToastProvider>
         <OnboardingProvider>
         <AuthProvider>
+          <ThemeSync />
           <SettingsProvider>
             <TimesProvider>
                 <LogsProvider>
