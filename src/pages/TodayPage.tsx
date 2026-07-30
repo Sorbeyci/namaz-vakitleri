@@ -19,6 +19,7 @@ import { useSettings } from "../features/settings/SettingsContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLogs } from "../features/tracking/LogsContext";
 import { InstallPrompt } from "../features/pwa/InstallPrompt";
+import { QiblaCard } from "../features/qibla/QiblaCard";
 import { istanbulEpoch } from "../lib/dates";
 import { PRAYERS, STATUS_LABELS, type DerivedStatus } from "../lib/prayers";
 import { activeTimeKey, deriveStatus, findNextPrayer, findPrevPrayerEpoch } from "../lib/status";
@@ -307,6 +308,7 @@ export function TodayPage() {
             <span style={{ flex: 1 }}>30 günlük vakit listesi</span>
             <IconChevronRight size={16} />
           </Link>
+          <QiblaCard />
           {!user && (
             <div className="card" style={{ display: "flex", gap: "var(--sp-3)", alignItems: "center" }}>
               <div style={{ flex: 1, fontSize: "var(--fs-sm)", color: "var(--text-muted)" }}>

@@ -20,6 +20,7 @@ import { useSettings } from "../features/settings/SettingsContext";
 import { useTimes } from "../features/prayer-times/TimesContext";
 import { useLocateCity } from "../features/city/useLocateCity";
 import { useOnboarding } from "../features/onboarding/Onboarding";
+import { APP_VERSION, CHANGELOG } from "../lib/version";
 import { ACCENTS, useTheme, type ThemePref } from "../theme/ThemeContext";
 
 const THEME_OPTIONS: { value: ThemePref; label: string }[] = [
@@ -91,6 +92,7 @@ export function ProfilePage() {
     }
   };
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [changelogOpen, setChangelogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const onDelete = async () => {
@@ -284,7 +286,28 @@ export function ProfilePage() {
         </button>
       </div>
 
-      <div className="caption">Namaz Vakitleri · v0.1</div>
+      <button className="caption version-btn" onClick={() => setChangelogOpen(true)}>
+        Namaz Vakitleri · v{APP_VERSION}
+      </button>
+
+      {changelogOpen && (
+        <Sheet title="Sürüm notları" onClose={() => setChangelogOpen(false)}>
+          <div className="release-scroll">
+            {CHANGELOG.map((r) => (
+              <div key={r.version} className="release">
+                <div className="release-head">
+                  v{r.version} <span>{r.date}</span>
+                </div>
+                <ul className="release-list">
+                  {r.items.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </Sheet>
+      )}
 
       {confirmOpen && (
         <Sheet title="Emin misin?" onClose={() => setConfirmOpen(false)} center>
