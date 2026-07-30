@@ -17,6 +17,11 @@ export function addDays(key: string, n: number): string {
   return dt.toISOString().slice(0, 10);
 }
 
+export function isFriday(key: string): boolean {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay() === 5;
+}
+
 /** "2026-07-30" + "13:16" → epoch ms (Türkiye saati) */
 export function istanbulEpoch(dateKey: string, time: string): number {
   const [y, m, d] = dateKey.split("-").map(Number);

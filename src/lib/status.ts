@@ -1,6 +1,11 @@
 import type { DayLog, DayTimes, DerivedStatus, PrayerDef, TimeKey } from "./prayers";
 import { PRAYERS } from "./prayers";
-import { addDaysKey, istanbulEpoch, toMin } from "./dates";
+import { addDaysKey, istanbulEpoch, toMin, weekdayIndex } from "./dates";
+
+/** Cuma günleri öğle vakti "Cuma" olarak gösterilir. */
+export function prayerDisplayName(def: PrayerDef, dateKey: string): string {
+  return def.key === "dhuhr" && weekdayIndex(dateKey) === 4 ? "Cuma" : def.name;
+}
 
 // "Kaçırıldı" ve "vakti gelmedi" veritabanına yazılmaz; saat ve kayıtlardan türetilir.
 

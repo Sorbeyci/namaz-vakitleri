@@ -19,7 +19,7 @@ import {
   weekdayIndex,
 } from "../lib/dates";
 import { PRAYERS, STATUS_LABELS } from "../lib/prayers";
-import { derivePastStatus, deriveStatus } from "../lib/status";
+import { derivePastStatus, deriveStatus, prayerDisplayName } from "../lib/status";
 
 type DayIndicator = "full" | "partial" | "none" | "empty";
 
@@ -138,6 +138,7 @@ export function CalendarPage() {
                   ? deriveStatus(def, today, selectedLog, now.minutes)
                   : derivePastStatus(selectedLog, def.key);
               const marked = status === "completed" || status === "qada";
+              const name = prayerDisplayName(def, selected);
               const mark = (s: "completed" | "qada" | null, msg: string) => {
                 markPrayer(selected, def.key, s);
                 toast(msg);
@@ -148,7 +149,7 @@ export function CalendarPage() {
                     <TimeIcon timeKey={def.timeKey} />
                   </span>
                   <div className="prayer-row-main">
-                    <div className="prayer-row-name">{def.name}</div>
+                    <div className="prayer-row-name">{name}</div>
                     <div
                       className={`prayer-row-status ${
                         marked ? "done" : status === "missed" ? "missed" : ""
@@ -162,9 +163,9 @@ export function CalendarPage() {
                       <button
                         className="mark-btn qada-action"
                         onClick={() =>
-                          mark("qada", `${def.name} namazı kaza edildi olarak kaydedildi.`)
+                          mark("qada", `${name} namazı kaza edildi olarak kaydedildi.`)
                         }
-                        aria-label={`${def.name} namazını kaza edildi olarak işaretle`}
+                        aria-label={`${name} namazını kaza edildi olarak işaretle`}
                         title="Kaza edildi olarak işaretle"
                       >
                         <IconQada size={18} />
@@ -175,13 +176,13 @@ export function CalendarPage() {
                       disabled={status === "notYet"}
                       onClick={() =>
                         marked
-                          ? mark(null, `${def.name} namazı işareti geri alındı.`)
-                          : mark("completed", `${def.name} namazı kaydedildi.`)
+                          ? mark(null, `${name} namazı işareti geri alındı.`)
+                          : mark("completed", `${name} namazı kaydedildi.`)
                       }
                       aria-label={
                         marked
-                          ? `${def.name} işaretini geri al`
-                          : `${def.name} namazını kılındı olarak işaretle`
+                          ? `${name} işaretini geri al`
+                          : `${name} namazını kılındı olarak işaretle`
                       }
                       title={marked ? "İşareti geri al" : "Kılındı olarak işaretle"}
                     >

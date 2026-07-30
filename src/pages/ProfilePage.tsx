@@ -12,7 +12,9 @@ import {
   IconProfile,
   IconTheme,
   IconTrash,
+  IconUsers,
 } from "../components/icons";
+import { Link } from "react-router-dom";
 import { Sheet, Switch, useToast } from "../components/ui";
 import { useAuth } from "../features/auth/AuthContext";
 import { disablePush, enablePush, pushConfigured } from "../features/notifications/push";
@@ -269,6 +271,11 @@ export function ProfilePage() {
       </div>
 
       <div className="card settings-list">
+        <Link to="/arkadaslar" className="settings-row">
+          <IconUsers size={20} />
+          <span className="grow">Arkadaşlar</span>
+          <IconChevronRight size={16} />
+        </Link>
         <button className="settings-row" onClick={openOnboarding}>
           <IconHelp size={20} />
           <span className="grow">Uygulama rehberi</span>

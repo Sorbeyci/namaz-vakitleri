@@ -8,7 +8,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { getAdminApp, getAdminDb } from "../server/admin.js";
 import { handlePrayerTimes } from "../server/prayerTimes.js";
-import { addDays, istanbulEpoch, todayIstanbul } from "../server/time.js";
+import { addDays, isFriday, istanbulEpoch, todayIstanbul } from "../server/time.js";
 import { PRAYERS } from "../src/lib/prayers.js";
 
 const SITE_URL = "https://namaz365.com/";
@@ -124,7 +124,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Bugünün 5 vakti + yarının sabahı (gece yarısından sonra ilk hatırlatma)
     const targets: { name: string; date: string; time: string | undefined }[] = [];
     const t0 = times.get(today);
-    if (t0) for (const p of PRAYERS) targets.push({ name: p.name, date: today, time: t0[p.timeKey] });
+    if (t0)
+      for (const p of PRAYERS)
+        targets.push({
+          name: p.key === "dhuhr" && isFriday(today) ? "Cuma" : p.name,
+          date: today,
+          time: t0[p.timeKey],
+        });
     const t1 = times.get(tomorrow);
     if (t1) targets.push({ name: "Sabah", date: tomorrow, time: t1.imsak });
 

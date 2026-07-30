@@ -1,4 +1,4 @@
-export const APP_VERSION = "1.0";
+export const APP_VERSION = "1.1";
 
 export interface ReleaseNote {
   version: string;
@@ -6,8 +6,18 @@ export interface ReleaseNote {
   items: string[];
 }
 
-// Sürüm notları: gün içi küçük adımlar tek sürümde derlenir, şişirilmez.
+// Sürüm notları: gün içi küçük adımlar tek sürümde derlenir; yalnızca
+// kullanıcının fark edeceği değişiklikler, sade bir dille yazılır.
 export const CHANGELOG: ReleaseNote[] = [
+  {
+    version: "1.1",
+    date: "30 Temmuz 2026",
+    items: [
+      "Arkadaşlar: davet koduyla arkadaş ekleyin, günlük takibi birlikte görün",
+      "Arkadaşına tek dokunuşla nazik bir namaz hatırlatması gönder",
+      "Cuma günleri öğle vakti \"Cuma\" olarak gösterilir",
+    ],
+  },
   {
     version: "1.0",
     date: "30 Temmuz 2026",

@@ -170,6 +170,18 @@ export function IconProfile(p: IconProps) {
   );
 }
 
+/* Arkadaşlar — iki kişi */
+export function IconUsers(p: IconProps) {
+  return (
+    <Svg {...p}>
+      <circle cx="9" cy="8.5" r="3.2" />
+      <path d="M3.5 19.5a5.5 5.5 0 0 1 11 0" />
+      <path d="M15.3 5.9a3.2 3.2 0 1 1 .4 5.9" />
+      <path d="M16.6 14.2a5.5 5.5 0 0 1 3.9 5.3" />
+    </Svg>
+  );
+}
+
 /* Kaza — geriye dönüş oku */
 export function IconQada(p: IconProps) {
   return (

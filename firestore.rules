@@ -7,16 +7,67 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Kullanici yalnizca kendi verisine erisebilir
+    // Hatirlatma zamanlayicisinin durumu — yalnizca sunucu
+    match /reminders/{doc} {
+      allow read, write: if false;
+    }
+
+    // Davet kodlari: girisli kullanici kod sorgulayabilir; herkes yalnizca
+    // kendi adina, bos bir koda kayit olusturabilir
+    match /inviteCodes/{code} {
+      allow get: if request.auth != null;
+      allow list: if false;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
     match /users/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
 
       match /days/{day} {
-        allow read, delete: if request.auth != null && request.auth.uid == uid;
+        // Sahibi ve onaylanmis arkadaslari okuyabilir
+        allow read: if request.auth != null && (
+          request.auth.uid == uid
+          || exists(/databases/$(database)/documents/users/$(uid)/friends/$(request.auth.uid))
+        );
         allow create, update: if request.auth != null
           && request.auth.uid == uid
-          // tarih anahtari YYYY-MM-DD bicimli olmali
           && day.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}');
+        allow delete: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Arkadaslik istekleri: istegi gonderen olusturur, iki taraf da
+      // gorebilir/silebilir (geri cekme veya reddetme)
+      match /friendRequests/{requesterId} {
+        allow read, delete: if request.auth != null
+          && (request.auth.uid == uid || request.auth.uid == requesterId);
+        allow create: if request.auth != null
+          && request.auth.uid == requesterId
+          && requesterId != uid;
+        allow update: if false;
+      }
+
+      // Arkadasliklar: kabul eden taraf, bekleyen istege dayanarak her iki
+      // kaydi da olusturur; iki taraf da arkadasligi sonlandirabilir
+      match /friends/{friendId} {
+        allow read: if request.auth != null
+          && (request.auth.uid == uid || request.auth.uid == friendId);
+        allow create: if request.auth != null && (
+          (request.auth.uid == uid
+            && exists(/databases/$(database)/documents/users/$(uid)/friendRequests/$(friendId)))
+          || (request.auth.uid == friendId
+            && exists(/databases/$(database)/documents/users/$(request.auth.uid)/friendRequests/$(uid)))
+        );
+        allow delete: if request.auth != null
+          && (request.auth.uid == uid || request.auth.uid == friendId);
+        allow update: if false;
+      }
+
+      // Durtme kayitlari yalnizca sunucu tarafindan yazilir
+      match /nudges/{nudgeId} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow write: if false;
       }
     }
 

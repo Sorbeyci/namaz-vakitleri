@@ -22,7 +22,13 @@ import { InstallPrompt } from "../features/pwa/InstallPrompt";
 import { QiblaCard } from "../features/qibla/QiblaCard";
 import { istanbulEpoch } from "../lib/dates";
 import { PRAYERS, STATUS_LABELS, type DerivedStatus } from "../lib/prayers";
-import { activeTimeKey, deriveStatus, findNextPrayer, findPrevPrayerEpoch } from "../lib/status";
+import {
+  activeTimeKey,
+  deriveStatus,
+  findNextPrayer,
+  findPrevPrayerEpoch,
+  prayerDisplayName,
+} from "../lib/status";
 
 function NextPrayerCard() {
   const { days, now } = useTimes();
@@ -49,6 +55,7 @@ function NextPrayerCard() {
   const h = Math.floor(secondsLeft / 3600);
   const m = Math.floor((secondsLeft % 3600) / 60);
   const s = secondsLeft % 60;
+  const displayName = prayerDisplayName(next.def, next.dateKey);
 
   // Son 15/10/5 dakikada kart kademeli olarak koyulaşır
   const urgency =
@@ -73,15 +80,15 @@ function NextPrayerCard() {
       </div>
       <div>
         <div className="next-card-label">Sıradaki namaz</div>
-        <div className="next-card-name">{next.def.name}</div>
+        <div className="next-card-name">{displayName}</div>
         <div className="next-card-time">{next.time}</div>
         <div className="next-card-remaining">
           <span className="pulse-dot" />
           {secondsLeft === 0 ? (
-            <span>{next.def.name} vakti girdi</span>
+            <span>{displayName} vakti girdi</span>
           ) : (
             <span>
-              {next.def.name} namazına{" "}
+              {displayName} namazına{" "}
               {h > 0 && (
                 <>
                   <span className="cd-num">{h}</span> saat{" "}
@@ -148,6 +155,7 @@ function PrayerList() {
 
   function PrayerRowView({ def }: { def: (typeof PRAYERS)[number] }) {
     const t = today!;
+    const name = prayerDisplayName(def, t.date);
     // Takip kapalıyken kayıtlar yok sayılır; yalnızca saat bilgisi gösterilir
     const status = deriveStatus(def, t, tracking ? dayLog : undefined, now.minutes);
     const marked = status === "completed" || status === "qada";
@@ -170,7 +178,7 @@ function PrayerList() {
         </span>
         <div className="prayer-row-main">
           <div className="prayer-row-name">
-            {def.name}
+            {name}
             {isNow && <span className="now-badge">Şu an</span>}
           </div>
           <div className={`prayer-row-status ${tracking ? (STATUS_CLASS[status] ?? "") : ""}`}>
@@ -184,9 +192,9 @@ function PrayerList() {
               <button
                 className="mark-btn qada-action"
                 onClick={() =>
-                  mark("qada", `${def.name} namazı kaza edildi olarak kaydedildi.`)
+                  mark("qada", `${name} namazı kaza edildi olarak kaydedildi.`)
                 }
-                aria-label={`${def.name} namazını kaza edildi olarak işaretle`}
+                aria-label={`${name} namazını kaza edildi olarak işaretle`}
                 title="Kaza edildi olarak işaretle"
               >
                 <IconQada size={18} />
@@ -196,14 +204,14 @@ function PrayerList() {
               className={`mark-btn${marked ? (status === "qada" ? " qada" : " done") : status !== "notYet" ? " markable" : ""}`}
               onClick={() =>
                 marked
-                  ? mark(null, `${def.name} namazı işareti geri alındı.`)
-                  : mark("completed", `${def.name} namazı kaydedildi.`)
+                  ? mark(null, `${name} namazı işareti geri alındı.`)
+                  : mark("completed", `${name} namazı kaydedildi.`)
               }
               disabled={status === "notYet"}
               aria-label={
                 marked
-                  ? `${def.name} işaretini geri al`
-                  : `${def.name} namazını kılındı olarak işaretle`
+                  ? `${name} işaretini geri al`
+                  : `${name} namazını kılındı olarak işaretle`
               }
               title={marked ? "İşareti geri al" : "Kılındı olarak işaretle"}
             >

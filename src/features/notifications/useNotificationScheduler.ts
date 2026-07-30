@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { istanbulEpoch } from "../../lib/dates";
-import { findNextPrayer } from "../../lib/status";
+import { findNextPrayer, prayerDisplayName } from "../../lib/status";
 import { useSettings } from "../settings/SettingsContext";
 import { useTimes } from "../prayer-times/TimesContext";
 
@@ -53,6 +53,7 @@ export function useNotificationScheduler() {
     const target = istanbulEpoch(next.dateKey, next.time);
     const nowMs = Date.now();
     const timers: number[] = [];
+    const name = prayerDisplayName(next.def, next.dateKey);
 
     const beforeAt = target - offsetMinutes * 60_000;
     if (beforeAt > nowMs) {
@@ -60,7 +61,7 @@ export function useNotificationScheduler() {
         window.setTimeout(
           () =>
             show(
-              `${next.def.name} namazına ${offsetMinutes} dakika kaldı`,
+              `${name} namazına ${offsetMinutes} dakika kaldı`,
               `Vakit: ${next.time}`,
               `pre-${next.dateKey}-${next.def.key}`,
             ),
@@ -71,7 +72,7 @@ export function useNotificationScheduler() {
     if (atTime && target > nowMs) {
       timers.push(
         window.setTimeout(
-          () => show(`${next.def.name} vakti girdi`, `Vakit: ${next.time}`, `at-${next.dateKey}-${next.def.key}`),
+          () => show(`${name} vakti girdi`, `Vakit: ${next.time}`, `at-${next.dateKey}-${next.def.key}`),
           target - nowMs,
         ),
       );
